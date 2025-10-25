@@ -1,8 +1,10 @@
+import { AuthProvider } from "react-admin";
+
 // 簡單的認證提供者（演示用）
 // 稍後可以替換為真實的 API 認證
-const authProvider = {
+const authProvider: AuthProvider = {
   // 登錄
-  login: ({ username, password }) => {
+  login: ({ username, password }: { username: string; password: string }) => {
     // 演示用：接受任何用戶名和密碼
     // 實際應用中應該調用後端 API 驗證
     if (username && password) {
