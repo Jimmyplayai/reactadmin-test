@@ -1,4 +1,4 @@
-import { AuthProvider } from "react-admin";
+import type { AuthProvider } from "react-admin";
 
 // 簡單的認證提供者（演示用）
 // 稍後可以替換為真實的 API 認證
@@ -30,7 +30,7 @@ const authProvider: AuthProvider = {
   },
 
   // 檢查錯誤（如 401 未授權）
-  checkError: (error) => {
+  checkError: (error: any) => {
     const status = error.status;
     if (status === 401 || status === 403) {
       localStorage.removeItem("username");
@@ -44,7 +44,7 @@ const authProvider: AuthProvider = {
   getIdentity: () => {
     const username = localStorage.getItem("username");
     return Promise.resolve({
-      id: username,
+      id: username || "guest",
       fullName: username || "用戶",
     });
   },
