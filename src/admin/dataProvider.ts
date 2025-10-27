@@ -21,8 +21,8 @@ const httpClient = (url: string, options: any = {}) => {
 const dataProvider: DataProvider = {
   // 获取列表
   getList: async (resource, params) => {
-    const { page, perPage } = params.pagination;
-    const { field, order } = params.sort;
+    const { page = 1, perPage = 10 } = params.pagination || {};
+    const { field = "id", order = "ASC" } = params.sort || {};
 
     const query = {
       _sort: field,
@@ -69,8 +69,8 @@ const dataProvider: DataProvider = {
 
   // 获取多个引用
   getManyReference: async (resource, params) => {
-    const { page, perPage } = params.pagination;
-    const { field, order } = params.sort;
+    const { page = 1, perPage = 10 } = params.pagination || {};
+    const { field = "id", order = "ASC" } = params.sort || {};
 
     const query = {
       _sort: field,
@@ -100,7 +100,7 @@ const dataProvider: DataProvider = {
     });
 
     return {
-      data: { ...params.data, id: json.id },
+      data: json,
     };
   },
 
