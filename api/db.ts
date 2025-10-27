@@ -59,13 +59,25 @@ export const posts: Post[] = [
 // 生成 JWT Token 的简单实现
 // 实际项目中应该使用 jsonwebtoken 库
 export function generateToken(userId: number): string {
-  return Buffer.from(JSON.stringify({ userId, exp: Date.now() + 24 * 60 * 60 * 1000 })).toString('base64');
+  const payload = JSON.stringify({ userId, exp: Date.now() + 24 * 60 * 60 * 1000 });
+  // 使用 btoa 代替 Buffer，更兼容浏览器和 Edge Functions
+  if (typeof Buffer !== 'undefined') {
+    return Buffer.from(payload).toString('base64');
+  } else {
+    return btoa(payload);
+  }
 }
 
 // 验证 Token
 export function verifyToken(token: string): { userId: number } | null {
   try {
-    const decoded = JSON.parse(Buffer.from(token, 'base64').toString());
+    let decoded: any;
+    if (typeof Buffer !== 'undefined') {
+      decoded = JSON.parse(Buffer.from(token, 'base64').toString());
+    } else {
+      decoded = JSON.parse(atob(token));
+    }
+
     if (decoded.exp < Date.now()) {
       return null; // Token 过期
     }

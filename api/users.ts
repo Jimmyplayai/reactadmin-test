@@ -1,31 +1,56 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { users, verifyToken } from './db';
 
-export default function handler(req: VercelRequest, res: VercelResponse) {
-  // 验证 token
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: '未授权' });
+export const config = {
+  api: {
+    bodyParser: true,
+  },
+};
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // 设置 CORS 头
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Expose-Headers', 'Content-Range');
+
+  // 处理 OPTIONS 请求
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
   }
 
-  const token = authHeader.substring(7);
-  const decoded = verifyToken(token);
-  if (!decoded) {
-    return res.status(401).json({ message: 'Token 无效或已过期' });
-  }
+  try {
+    // 验证 token
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ message: '未授权' });
+    }
 
-  // 处理不同的 HTTP 方法
-  switch (req.method) {
-    case 'GET':
-      return handleGet(req, res);
-    case 'POST':
-      return handlePost(req, res);
-    case 'PUT':
-      return handlePut(req, res);
-    case 'DELETE':
-      return handleDelete(req, res);
-    default:
-      return res.status(405).json({ message: 'Method not allowed' });
+    const token = authHeader.substring(7);
+    const decoded = verifyToken(token);
+    if (!decoded) {
+      return res.status(401).json({ message: 'Token 无效或已过期' });
+    }
+
+    // 处理不同的 HTTP 方法
+    switch (req.method) {
+      case 'GET':
+        return handleGet(req, res);
+      case 'POST':
+        return handlePost(req, res);
+      case 'PUT':
+        return handlePut(req, res);
+      case 'DELETE':
+        return handleDelete(req, res);
+      default:
+        return res.status(405).json({ message: 'Method not allowed' });
+    }
+  } catch (error: any) {
+    console.error('Users API error:', error);
+    return res.status(500).json({
+      message: '服务器错误',
+      error: error.message
+    });
   }
 }
 
