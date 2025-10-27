@@ -1,12 +1,11 @@
 import { Admin, Resource, ListGuesser } from "react-admin";
-import jsonServerProvider from "ra-data-json-server";
+import dataProvider from "./dataProvider";
 import authProvider from "./authProvider";
 import LoginPage from "./LoginPage";
 
-const dataProvider = jsonServerProvider("https://jsonplaceholder.typicode.com");
-
 const AdminApp = () => (
   <Admin
+    basename="/admin"
     dataProvider={dataProvider}
     authProvider={authProvider}
     loginPage={LoginPage}
