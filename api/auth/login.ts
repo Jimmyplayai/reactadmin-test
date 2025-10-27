@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { users, generateToken } from '../db';
+import { users, generateToken } from '../db.js';
 
 export const config = {
   api: {
